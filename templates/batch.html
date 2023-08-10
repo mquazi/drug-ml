@@ -1,210 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <!-- <meta name="_csrf" content="${_csrf.token}"/>
-<meta name="_csrf_header" content="${_csrf.headerName}"/> -->
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta
-      name="keywords"
-      content="NCATS, QSAR, model, smiles, sdf, structure, predictor"
-    />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>NCATS Predictor</title>
-    <link rel="icon" type="image/x-icon" href="predictor/image/favicon.ico" />
-    <link
-      type="text/css"
-      rel="stylesheet"
-      href="predictor/css/bootstrap.min.css"
-    />
-    <!--<link rel="stylesheet" type="text/css" th:href="@{/css/mdb.css}"/>-->
-    <link
-      rel="stylesheet"
-      href="predictor/font-awesome-4.7.0/css/font-awesome.min.css"
-    />
+<!-- batch.html -->
+{% extends 'base.html' %}
 
-    <link
-      type="text/css"
-      rel="stylesheet"
-      href="predictor/css/oswald/oswald-400-700-300.css"
-    />
-    <link
-      type="text/css"
-      rel="stylesheet"
-      href="predictor/css/dataTables.bootstrap.min.css"
-    />
-    <link
-      type="text/css"
-      rel="stylesheet"
-      href="predictor/css/bootstrap-slider.min.css"
-    />
-    <link
-      type="text/css"
-      rel="stylesheet"
-      href="predictor/css/dataTables.fixedHeader.min.css"
-    />
-    <link type="text/css" rel="stylesheet" href="predictor/css/style.css" />
+{% block title %}Batch Prediction - Predictor{% endblock %}
 
-    <script
-      type="text/javascript"
-      src="predictor/js/jquery-3.0.0.min.js"
-    ></script>
-    <script type="text/javascript" src="predictor/js/popper.min.js"></script>
-    <script type="text/javascript" src="predictor/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="predictor/js/util.js"></script>
-    <script type="text/javascript" src="predictor/js/mustache.min.js"></script>
-  </head>
-  <body>
-    <div class="container-fluid text-white" id="purple_banner">
-      <div class="container">
-        <img
-          class="masthead-logo"
-          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-hhs-logo.png"
-          alt="HHS Logo Icon"
-        />
-        <a
-          class="masthead-link hhs-link"
-          href="https://www.hhs.gov/"
-          target="_blank"
-          ><span class="d-none d-xl-inline-block"
-            >U.S. Department of Health and Human Services</span
-          ><span class="d-xl-none d-inline-block">HHS</span></a
-        >
-        <img
-          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-divider.png"
-          alt="NIH Logo Icon"
-        />
-        <img
-          class="masthead-logo"
-          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-nih-logo.png"
-        />
-        <a
-          class="masthead-link nih-link"
-          href="https://www.nih.gov/"
-          target="_blank"
-          ><span class="d-none d-lg-inline-block"
-            >National Institutes of Health</span
-          ><span class="d-lg-none d-inline-block">NIH</span></a
-        >
-        <img
-          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-divider.png"
-        />
-        <img
-          class="masthead-logo"
-          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-nih-logo.png"
-          alt="NCATS Logo Icon"
-        />
-        <a
-          class="masthead-link ncats-link"
-          href="https://www.ncats.nih.gov/"
-          target="_blank"
-          ><span class="d-none d-md-inline-block"
-            >National Center for Advancing Translational Sciences</span
-          ><span class="d-md-none d-inline-block">NCATS</span></a
-        >
-        <img
-          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-divider.png"
-        />
+{% block content %}
+
+<div id="main_content">
+  <div class="container" id="batch_prediction_form">
+    <div class="row">
+      <div class="col-md-10" id="batch_introduction">
+        For batch prediction, select structure file type SDF or SMILES, fill
+        your email address. When the batch prediction completed, the
+        prediction results will send to your provided email.
       </div>
     </div>
-    <div>
-      <div class="container-fluid">
-        <div class="container px-0">
-          <div class="row" id="brand_row">
-            <div class="col-md-12">
-              <div>
-                <a
-                  class="navbar-brand"
-                  href="https://ncats.nih.gov"
-                  target="_blank"
-                >
-                  <img id="ncats_logo" src="predictor/image/ncats.svg" />
-                </a>
+
+    <div class="row">
+      <div class="col-md-8">
+        <form class="form-horizontal" id="batchsdf_form" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-2">
+                <label for="" class="control-label">File Type:</label>
               </div>
-              <div id="web_name">
-                <a class="large-screen" href="predictor/index.html"
-                  >NCATS Predictor</a
-                >
-                <a class="small-screen" href="predictor/index.html"></a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div id="navigation" class="container-fluid">
-        <div class="container adjustable px-0">
-          <nav
-            class="navbar navbar-dark navbar-expand-md py-0"
-            role="navigation"
-          >
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="navbar-collapse collapse" id="navbarSupportedContent">
-              <ul id="menu-main-nav" class="navbar-nav nav-justified w-100">
-                <li id="navbar_intro" class="nav-item menu-item">
-                  <a href="predictor/">Introduction</a>
-                </li>
-
-                <li id="navbar_structure" class="nav-item menu-item">
-                  <a href="predictor/structure">Structure Prediction</a>
-                </li>
-
-                <li id="navbar_batch" class="nav-item menu-item">
-                  <a href="predictor/batch">Batch Prediction</a>
-                </li>
-
-                <li id="navbar_models" class="nav-item menu-item">
-                  <a href="predictor/models">Models</a>
-                </li>
-                <li id="navbar_resources" class="nav-item menu-item">
-                  <a href="predictor/resources">Resources</a>
-                </li>
-              </ul>
-            </div>
-          </nav>
-        </div>
-      </div>
-    </div>
-
-    <div id="main_content">
-      <div class="container" id="batch_prediction_form">
-        <div class="row">
-          <div class="col-md-10" id="batch_introduction">
-            For batch prediction, select structure file type SDF or SMILES, fill
-            your email address. When the batch prediction completed, the
-            prediction results will send to your provided email.
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col-md-8">
-            <form
-              class="form-horizontal"
-              id="batchsdf_form"
-              method="POST"
-              enctype="multipart/form-data"
-            >
-              <div class="form-group">
-                <div class="row">
-                  <div class="col-md-2">
-                    <label for="" class="control-label">File Type:</label>
-                  </div>
-                  <div class="col-md-10">
-                    <!--
+              <div class="col-md-10">
+                <!--
 												 <label class="radio-inline">
           												<input type="radio" name="fileType" value="sdf" checked="checked"> SDF
         										 </label>
@@ -212,227 +32,103 @@
           												<input type="radio" name="fileType" value="smiles"> SMILES
         										 </label>
         										 -->
-                    <div class="form-check form-check-inline">
-                      <input
-                        class="form-check-input algorithm"
-                        type="radio"
-                        name="fileType"
-                        id="sdf"
-                        value="sdf"
-                        checked
-                      />
-                      <label class="form-check-label" for="sdf">SDF</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <input
-                        class="form-check-input algorithm"
-                        type="radio"
-                        name="fileType"
-                        id="smiles"
-                        value="smiles"
-                      />
-                      <label class="form-check-label" for="smiles"
-                        >SMILES</label
-                      >
-                    </div>
-                  </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input algorithm" type="radio" name="fileType" id="sdf" value="sdf" checked />
+                  <label class="form-check-label" for="sdf">SDF</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input algorithm" type="radio" name="fileType" id="smiles" value="smiles" />
+                  <label class="form-check-label" for="smiles">SMILES</label>
                 </div>
               </div>
-              <div class="form-group">
-                <div class="row">
-                  <div class="col-md-2">
-                    <label for="email" class="control-label"
-                      >Your Email<i
-                        class="fa fa-asterisk"
-                        style="
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row">
+              <div class="col-md-2">
+                <label for="email" class="control-label">Your Email<i class="fa fa-asterisk" style="
                           color: #ff0000;
                           font-size: 6px;
                           margin-left: 5px;
                           vertical-align: top;
-                        "
-                        aria-hidden="true"
-                      ></i>
-                    </label>
-                  </div>
-                  <div class="col-md-10">
-                    <input
-                      type="text"
-                      name="email"
-                      class="form-control"
-                      required="required"
-                      placeholder="your email address"
-                    />
-                  </div>
-                </div>
+                        " aria-hidden="true"></i>
+                </label>
               </div>
-
-              <div class="form-group">
-                <div class="row">
-                  <div class="col-sm-12">
-                    <input
-                      type="file"
-                      class="filestyle"
-                      name="structurefile"
-                      id="structurefile"
-                      data-iconName="glyphicon glyphicon-folder-open"
-                      data-buttonBefore="true"
-                      data-placeholder="Please select SDF file"
-                      required="required"
-                    />
-                  </div>
-                </div>
+              <div class="col-md-10">
+                <input type="text" name="email" class="form-control" required="required"
+                  placeholder="your email address" />
               </div>
-
-              <div class="form-group">
-                <div class="col-md-12">
-                  <button class="btn btn-primary pull-right predict-btn">
-                    &nbsp; Submit &nbsp;
-                  </button>
-                  <img class="indicator pull-right" src="image/process.gif" />
-                </div>
-              </div>
-            </form>
+            </div>
           </div>
-        </div>
+
+          <div class="form-group">
+            <div class="row">
+              <div class="col-sm-12">
+                <input type="file" class="filestyle" name="structurefile" id="structurefile"
+                  data-iconName="glyphicon glyphicon-folder-open" data-buttonBefore="true"
+                  data-placeholder="Please select SDF file" required="required" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-md-12">
+              <button class="btn btn-primary pull-right predict-btn">
+                &nbsp; Submit &nbsp;
+              </button>
+              <img class="indicator pull-right" src="image/process.gif" />
+            </div>
+          </div>
+        </form>
       </div>
     </div>
-    <br /><br />
-    <div class="container-fluid text-center footer">
-      <div class="row">
-        <div class="col-md-12">
-          <p>
-            <a href="https://www.nih.gov/" target="_blank" class="external-link"
-              >NIH</a
-            >
-            <span class="v-bar">|</span>
-            <a
-              href="https://ncats.nih.gov/"
-              target="_blank"
-              class="external-link"
-              >NCATS</a
-            >
-            <span class="v-bar">|</span>
-            <a
-              href="https://ncats.nih.gov/privacy"
-              target="_blank"
-              class="external-link"
-              >PRIVACY ACT</a
-            >
-            <span class="v-bar">|</span>
-            <a
-              href="https://ncats.nih.gov/accessibility"
-              target="_blank"
-              class="external-link"
-              >ACCESSIBILITY</a
-            >
-            <span class="v-bar">|</span>
-            <a
-              href="https://ncats.nih.gov/disclaimer"
-              target="_blank"
-              class="external-link"
-              >DISCLAIMER</a
-            >
-          </p>
-        </div>
-      </div>
-      <div class="row mb-2">
-        <div class="col-md-12">
-          <a
-            title="HHS Vulnerability Disclosure"
-            href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html"
-            class="external-link"
-            target="_blank"
-            >HHS Vulnerability Disclosure</a
-          >
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12">
-          <p>
-            If you have problems viewing PDF files, download the latest version
-            of
-            <a
-              target="_blank"
-              href="https://get.adobe.com/reader/"
-              class="external-link"
-              >Adobe Reader</a
-            >
-          </p>
-        </div>
-      </div>
+  </div>
+</div>
+<br /><br />
 
-      <div class="row">
-        <div class="col-md-12">
-          <p>
-            For
-            <a
-              href="http://edi.nih.gov/consulting/language-access-program/about"
-              target="_blank"
-              title="Read the plan"
-              class="external-link"
-              >language access</a
-            >
-            assistance, contact the
-            <a
-              href="mailto: info@ncats.nih.gov"
-              title="E - mail Public Information Officer"
-              class="external-link"
-              >NCATS Public Information Officer</a
-            >
-          </p>
-        </div>
-      </div>
+{% endblock %}
 
-      <div class="row">
-        <div class="col-md-12">
-          <p>
-            National Center for Advancing Translational Sciences (NCATS), 6701
-            Democracy Boulevard, Bethesda MD 20892-4874 &#9742; 301-594-8966
-          </p>
-        </div>
-      </div>
-    </div>
+{% block scripts %}
 
-    <script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
-    <script src="predictor/js/bootbox.min.js"></script>
-    <script src="js/FileSaver.js"></script>
-    <script>
-      $(function () {
-        setActiveMenu("navbar_batch");
-        $(":file").filestyle();
-        //----------------------------Batch Prediction---------------------------------------------
-        $("#batchsdf_form").submit(function (event) {
-          event.preventDefault();
-          var $processing = $(this).find(".indicator");
-          $processing.show();
-          /*'formData' doesn't work for IE9*/
-          var frmData = new FormData($("#batchsdf_form")[0]);
-          $.ajax({
-            type: "POST",
-            data: frmData,
-            processData: false,
-            contentType: false,
-            url: "route/predict/batch",
-            headers: {
-              "x-custom-header": "ktzyHHQDu+ljXpsIp6aeREMBbnWU35pRE+Q6bo7c8hk=",
-            },
-            success: function (data, status, xhr) {
-              $processing.hide();
-              if (data.type == "info" && data.email) {
-                var msg =
-                  "Thanks for choosing <b>NCATS Predictor</b>, you submission has been accepted. The prediction results will be sent to <b><i>" +
-                  data.email +
-                  "</i></b> when prediction is completed.";
-                bootbox.alert(msg);
-              }
-            },
-            error: function (xhr, status, error) {
-              $processing.hide();
-              bootbox.alert(xhr.responseText);
-            },
-          });
-        });
+<script type="text/javascript" src="js/bootstrap-filestyle.min.js"></script>
+<script src="static/js/bootbox.min.js"></script>
+<script src="js/FileSaver.js"></script>
+<script>
+  $(function () {
+    setActiveMenu("navbar_batch");
+    $(":file").filestyle();
+    //----------------------------Batch Prediction---------------------------------------------
+    $("#batchsdf_form").submit(function (event) {
+      event.preventDefault();
+      var $processing = $(this).find(".indicator");
+      $processing.show();
+      /*'formData' doesn't work for IE9*/
+      var frmData = new FormData($("#batchsdf_form")[0]);
+      $.ajax({
+        type: "POST",
+        data: frmData,
+        processData: false,
+        contentType: false,
+        url: "route/predict/batch",
+        headers: {
+          "x-custom-header": "ktzyHHQDu+ljXpsIp6aeREMBbnWU35pRE+Q6bo7c8hk=",
+        },
+        success: function (data, status, xhr) {
+          $processing.hide();
+          if (data.type == "info" && data.email) {
+            var msg =
+              "Thanks for choosing <b>NCATS Predictor</b>, you submission has been accepted. The prediction results will be sent to <b><i>" +
+              data.email +
+              "</i></b> when prediction is completed.";
+            bootbox.alert(msg);
+          }
+        },
+        error: function (xhr, status, error) {
+          $processing.hide();
+          bootbox.alert(xhr.responseText);
+        },
       });
-    </script>
-  </body>
-</html>
+    });
+  });
+</script>
+{% endblock %}

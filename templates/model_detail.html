@@ -1,0 +1,33 @@
+        	    <dl class="row">
+           		<dt class="col-md-2">Name:</dt><dd class="col-md-9"><i>{{name}}</i></dd>
+           		<dt class="col-md-2">Prediction Type:</dt><dd class="col-md-9">{{type}}</dd>
+           		<dt class="col-md-2">End Point:</dt><dd class="col-md-9">{{endPoint}}</dd>
+
+           		<dt class="col-md-2">Group:</dt><dd class="col-md-9">{{group}}</dd>
+           		<dt class="col-md-2">Title:</dt><dd class="col-md-9">{{title}}</dd>
+           		<dt class="col-md-2">Num Training Set:</dt><dd class="col-md-9">{{numTraining}}</dd>
+
+           		<dt class="col-md-2">Num Testing Set:</dt><dd class="col-md-9">{{numTesting}}</dd>
+           		<dt class="col-md-2">Validation Approach:</dt><dd class="col-md-9">{{validationApproach}}</dd>
+           		<dt class="col-md-2">R2:</dt><dd class="col-md-9">{{r2}}</dd>
+
+           		<dt class="col-md-2">RMSE:</dt><dd class="col-md-9">{{rmse}}</dd>
+           		<dt class="col-md-2">Balanced Accuracy:</dt><dd class="col-md-9">{{accuracy}}</dd>
+
+           		<dt class="col-md-2">AUC:</dt><dd class="col-md-9">{{auc}}</dd>
+           		<dt class="col-md-3 gap">Descriptors:</dt>
+        		<dd class="col-md-12">{{descriptors}}</dd>
+
+           		<dt class="col-md-3">Machine Learning Approach:</dt>
+        		<dd class="col-md-12">{{macLearningApproach}}</dd>
+           		<dt class="col-md-3 gap">Applicability domain:</dt>
+        		<dd class="col-md-12">{{applicabilityDomain}}</dd>
+
+        		<dt class="col-md-3 gap">Reference:</dt>
+        		<dd class="col-md-12">
+					{% for ref in reference %}
+						{{ref}}<br>
+					{% endfor %}
+        		</dd>
+        		<dt class="col-md-2">Source:</dt><dd class="col-md-9"><a href="{{link}}.zip">{{source}}</a></dd>
+        		</dl>
