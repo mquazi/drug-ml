@@ -41,10 +41,9 @@ button.btn-default {
 }
 
 #ncats_logo {
-  width: 260px;
+  width: 200px;
   padding-right: 15px;
-  margin-top: -15px;
-  border-right: 2px solid #aaa;
+  margin-top: -30px;
 }
 #brand_row {
   height: 90px;
@@ -54,15 +53,15 @@ button.btn-default {
   margin-left: 15px;
 }
 #web_name a {
-  color: #672e6c;
-  font-size: 40px;
+  color: #000000;
+  font-size: 50px;
   line-height: 90px;
   letter-spacing: -1px;
 }
 
 /* Navigation */
 #navigation {
-  background-color: #006478;
+  background-color: #ff0000;
 }
 #navigation a:not(.dropdown-item) {
   color: #fff;
@@ -102,7 +101,7 @@ button.btn-default {
 }
 
 .jumbotron {
-  background-image: url("../image/home.jpg");
+  background-image: url("../image/home.png");
   /*background-image: url("../img/banner-lighter.png");*/
   background-position: center center;
   background-size: 100% auto;
