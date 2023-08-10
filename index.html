@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <meta name="_csrf" content="${_csrf.token}"/>
+<meta name="_csrf_header" content="${_csrf.headerName}"/> -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta
+      name="keywords"
+      content="NCATS, QSAR, model, smiles, sdf, structure, predictor"
+    />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>NCATS Predictor</title>
+    <link rel="icon" type="image/x-icon" href="predictor/image/favicon.ico" />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="predictor/css/bootstrap.min.css"
+    />
+    <!--<link rel="stylesheet" type="text/css" th:href="@{/css/mdb.css}"/>-->
+    <link
+      rel="stylesheet"
+      href="predictor/font-awesome-4.7.0/css/font-awesome.min.css"
+    />
+
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="predictor/css/oswald/oswald-400-700-300.css"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="predictor/css/dataTables.bootstrap.min.css"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="predictor/css/bootstrap-slider.min.css"
+    />
+    <link
+      type="text/css"
+      rel="stylesheet"
+      href="predictor/css/dataTables.fixedHeader.min.css"
+    />
+    <link type="text/css" rel="stylesheet" href="predictor/css/style.css" />
+
+    <script
+      type="text/javascript"
+      src="predictor/js/jquery-3.0.0.min.js"
+    ></script>
+    <script type="text/javascript" src="predictor/js/popper.min.js"></script>
+    <script
+      type="text/javascript"
+      src="predictor/js/bootstrap.min.js"
+    ></script>
+    <script type="text/javascript" src="predictor/js/util.js"></script>
+    <script type="text/javascript" src="predictor/js/mustache.min.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid text-white" id="purple_banner">
+      <div class="container">
+        <img
+          class="masthead-logo"
+          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-hhs-logo.png"
+          alt="HHS Logo Icon"
+        />
+        <a
+          class="masthead-link hhs-link"
+          href="https://www.hhs.gov/"
+          target="_blank"
+          ><span class="d-none d-xl-inline-block"
+            >U.S. Department of Health and Human Services</span
+          ><span class="d-xl-none d-inline-block">HHS</span></a
+        >
+        <img
+          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-divider.png"
+          alt="NIH Logo Icon"
+        />
+        <img
+          class="masthead-logo"
+          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-nih-logo.png"
+        />
+        <a
+          class="masthead-link nih-link"
+          href="https://www.nih.gov/"
+          target="_blank"
+          ><span class="d-none d-lg-inline-block"
+            >National Institutes of Health</span
+          ><span class="d-lg-none d-inline-block">NIH</span></a
+        >
+        <img
+          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-divider.png"
+        />
+        <img
+          class="masthead-logo"
+          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-nih-logo.png"
+          alt="NCATS Logo Icon"
+        />
+        <a
+          class="masthead-link ncats-link"
+          href="https://www.ncats.nih.gov/"
+          target="_blank"
+          ><span class="d-none d-md-inline-block"
+            >National Center for Advancing Translational Sciences</span
+          ><span class="d-md-none d-inline-block">NCATS</span></a
+        >
+        <img
+          src="https://registries.ncats.nih.gov/wp-content/themes/default/img/masthead-divider.png"
+        />
+      </div>
+    </div>
+    <div>
+      <div class="container-fluid">
+        <div class="container px-0">
+          <div class="row" id="brand_row">
+            <div class="col-md-12">
+              <div>
+                <a
+                  class="navbar-brand"
+                  href="https://ncats.nih.gov"
+                  target="_blank"
+                >
+                  <img id="ncats_logo" src="predictor/image/ncats.svg" />
+                </a>
+              </div>
+              <div id="web_name">
+                <a class="large-screen" href="predictor/index.html"
+                  >NCATS Predictor</a
+                >
+                <a class="small-screen" href="predictor/index.html"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div id="navigation" class="container-fluid">
+        <div class="container adjustable px-0">
+          <nav
+            class="navbar navbar-dark navbar-expand-md py-0"
+            role="navigation"
+          >
+            <button
+              class="navbar-toggler"
+              type="button"
+              data-toggle="collapse"
+              data-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse" id="navbarSupportedContent">
+              <ul id="menu-main-nav" class="navbar-nav nav-justified w-100">
+                <li id="navbar_intro" class="nav-item menu-item">
+                  <a href="predictor/">Introduction</a>
+                </li>
+
+                <li id="navbar_structure" class="nav-item menu-item">
+                  <a href="predictor/structure">Structure Prediction</a>
+                </li>
+
+                <li id="navbar_batch" class="nav-item menu-item">
+                  <a href="predictor/batch">Batch Prediction</a>
+                </li>
+
+                <li id="navbar_models" class="nav-item menu-item">
+                  <a href="predictor/models">Models</a>
+                </li>
+                <li id="navbar_resources" class="nav-item menu-item">
+                  <a href="predictor/resources">Resources</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <div class="jumbotron">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12" id="jumbotron_introduction"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="main_content">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12" id="introduction_text">
+            <p>
+              <strong>NCATS Predictor</strong> is a website for scientific
+              community to obtain
+              <abbr title="Quantitative structure–activity relationship"
+                >QSAR</abbr
+              >
+              data sets and models related to the NCATS projects. NCATS
+              Predictor allows the simultaneous prediction of different
+              biological activities and physico-chemical properties of
+              compounds. The service allows to input the different types of
+              structure identifiers: Smiles, SDF files, Images of chemical
+              structures. As output, the service provides predictions from the
+              models calculated for each submitted compound. In addition, the
+              service estimates and reports the applicability domain of each
+              QSAR model. This calculation is performed for each compound with
+              the result that each prediction is annotated with either "<span
+                class="in-domain"
+                >In AD</span
+              >" or "<span class="out-domain">Out of AD</span>", indicating
+              whether one can be confident in the prediction or not. This
+              service can be used by researchers for virtual screening of
+              drug-like compounds with desirable biological profile as well as
+              for structure optimization of the compound of interest.
+            </p>
+            <p>
+              A self-contained instance of NCATS Predictor is available at
+              <a href=" https://hub.docker.com/r/ncats/predx/?" target="_blank"
+                ><img src="image/docker.png" class="docker"
+              /></a>
+            </p>
+            <p>
+              Publication:
+              <a
+                href="https://pubs.acs.org/doi/10.1021/acs.jcim.9b00526"
+                target="_blank"
+                >https://pubs.acs.org/doi/10.1021/acs.jcim.9b00526</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid text-center footer">
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            <a href="https://www.nih.gov/" target="_blank" class="external-link"
+              >NIH</a
+            >
+            <span class="v-bar">|</span>
+            <a
+              href="https://ncats.nih.gov/"
+              target="_blank"
+              class="external-link"
+              >NCATS</a
+            >
+            <span class="v-bar">|</span>
+            <a
+              href="https://ncats.nih.gov/privacy"
+              target="_blank"
+              class="external-link"
+              >PRIVACY ACT</a
+            >
+            <span class="v-bar">|</span>
+            <a
+              href="https://ncats.nih.gov/accessibility"
+              target="_blank"
+              class="external-link"
+              >ACCESSIBILITY</a
+            >
+            <span class="v-bar">|</span>
+            <a
+              href="https://ncats.nih.gov/disclaimer"
+              target="_blank"
+              class="external-link"
+              >DISCLAIMER</a
+            >
+          </p>
+        </div>
+      </div>
+      <div class="row mb-2">
+        <div class="col-md-12">
+          <a
+            title="HHS Vulnerability Disclosure"
+            href="https://www.hhs.gov/vulnerability-disclosure-policy/index.html"
+            class="external-link"
+            target="_blank"
+            >HHS Vulnerability Disclosure</a
+          >
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            If you have problems viewing PDF files, download the latest version
+            of
+            <a
+              target="_blank"
+              href="https://get.adobe.com/reader/"
+              class="external-link"
+              >Adobe Reader</a
+            >
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            For
+            <a
+              href="http://edi.nih.gov/consulting/language-access-program/about"
+              target="_blank"
+              title="Read the plan"
+              class="external-link"
+              >language access</a
+            >
+            assistance, contact the
+            <a
+              href="mailto: info@ncats.nih.gov"
+              title="E - mail Public Information Officer"
+              class="external-link"
+              >NCATS Public Information Officer</a
+            >
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <p>
+            National Center for Advancing Translational Sciences (NCATS), 6701
+            Democracy Boulevard, Bethesda MD 20892-4874 &#9742; 301-594-8966
+          </p>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(function () {
+        setActiveMenu("navbar_intro");
+      });
+    </script>
+  </body>
+</html>
