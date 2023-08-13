@@ -7,12 +7,15 @@ RUN apt update --allow-releaseinfo-change && \
     apt install -y perl && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+# set the working directory
+WORKDIR app
 
-WORKDIR /app
-COPY models/files ./models/files
-COPY ddt ./ddt
-COPY ligandnet.py best_models.txt ./
+# install dependencies
+RUN pip3 install --upgrade pip
+COPY ./requirements.txt .
+RUN pip3 install -r requirements.txt
 
-# ENTRYPOINT ["python3", "ligandnet.py"]
+RUN PYTHONIOENCODING="utf-8" # Setup the encoding
+
+# copy project
+# COPY . .
