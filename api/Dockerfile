@@ -1,14 +1,29 @@
-FROM informaticsmatters/rdkit-python3-debian:Release_2020_09
-USER ${UID}:${GID}
-
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt update --allow-releaseinfo-change && \
-    apt upgrade -y && \
-    apt install -y perl && \
-    rm -rf /var/lib/apt/lists/*
+FROM ubuntu:20.04
 
 # set the working directory
 WORKDIR app
+
+# Ensure apt is in non-interactive to avoid prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies.
+RUN apt-get -y update --no-install-recommends \
+    && apt-get -y install --no-install-recommends \
+    python3 \
+    python3-pip \
+    build-essential \
+    curl \
+    ca-certificates \
+    apt-utils \
+    git \
+    vim \
+    libxrender1 \
+    libsm6 \
+    libxext6 \
+    && apt-get autoremove -y \
+    && apt-get clean -y
+
+RUN PYTHONIOENCODING="utf-8" # Setup the encoding
 
 # install dependencies
 RUN pip3 install --upgrade pip

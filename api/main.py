@@ -1,7 +1,9 @@
 from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException, Path
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from pydantic import BaseModel
-import asyncio
+from concurrent.futures import ProcessPoolExecutor
+from fastapi.responses import JSONResponse
+from fastapi.param_functions import Body
+from celery.result import AsyncResult
+from worker import create_task
 import os
 import joblib
 import json
@@ -15,9 +17,7 @@ import logging
 app = FastAPI()
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -144,23 +144,23 @@ async def get_prediction_by_model(
 
 @app.get("/")
 async def root():
-    return {"ping": "pong"}
+    return JSONResponse({"ping": "pong"})
 
 
 @app.get("/ligandnet/api/v1/")
 async def ligandnet_home():
-    return {"message": "Welcome to LigandNet API"}
+    return JSONResponse({"message": "Welcome to LigandNet API"})
 
 
 @app.get("/ligandnet/api/v1/models/{uniprot_id}")
 async def ligandnet_model_info(uniprot_id: str = Depends(validate_uniprot_id)):
-    return models_info[uniprot_id]
+    return JSONResponse(models_info[uniprot_id])
 
 
 @app.post("/ligandnet/api/v1/predict/{smiles}")
 async def ligandnet_predict(smiles: str = Depends(validate_smiles)):
     results = await get_prediction_async(smiles, "smiles")
-    return {"predictions": results}
+    return JSONResponse({"predictions": results})
 
 
 @app.post("/ligandnet/api/v1/predict/{uniprot_id}/{smiles}")
@@ -169,4 +169,22 @@ async def ligandnet_predict_by_model(
     smiles: str = Depends(validate_smiles),
 ):
     results = await get_prediction_by_model(uniprot_id, smiles, "smiles")
-    return {"predictions": results}
+    return JSONResponse({"predictions": results})
+
+
+@app.post("/tasks", status_code=201)
+def run_task(payload=Body(...)):
+    task_type = payload["type"]
+    task = create_task.delay(int(task_type))
+    return JSONResponse({"task_id": task.id})
+
+
+@app.get("/tasks/{task_id}")
+def get_status(task_id):
+    task_result = AsyncResult(task_id)
+    result = {
+        "task_id": task_id,
+        "task_status": task_result.status,
+        "task_result": task_result.result,
+    }
+    return JSONResponse(result)
