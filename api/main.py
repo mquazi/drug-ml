@@ -17,7 +17,7 @@ import logging
 app = FastAPI()
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -27,31 +27,19 @@ models_info = {}
 
 
 def load_model(model_name: str):
-    return joblib.load(MODELS_DIR / model_name)
+    models[model_name[:6]] = joblib.load(MODELS_DIR / model_name)
 
 
 def load_single_model(model_name: str):
-    model = app.state.model_loading_pool.submit(load_model, model_name)
-    models[model_name] = model
+    task = app.state.model_loading_pool.submit(load_model, model_name)
+    models[model_name] = task.result()
 
     # Check if all the models are loaded
     if len(models) == len(os.listdir(MODELS_DIR)):
         logger.info("All models loaded")
 
 
-def load_models_background(background_tasks: BackgroundTasks):
-    # Read the best models
-    with open("best_models.txt", "r") as f:
-        best_models = f.read().splitlines()
-
-    for model_name in best_models:
-        background_tasks.add_task(load_single_model, model_name)
-
-
-def load_models_info():
-    with open("best_models.txt", "r") as f:
-        best_models = f.read().splitlines()
-    uniprots = [model_name[:6] for model_name in best_models]
+def load_models_info(uniprots: list):
     for uniprot in uniprots:
         with open(f"models/reports/{uniprot}_results.json", "r") as f:
             models_info[uniprot] = json.load(f)
@@ -63,15 +51,18 @@ def load_models_info():
 async def startup_event():
     app.state.model_loading_pool = ProcessPoolExecutor(max_workers=os.cpu_count())
     background_tasks = BackgroundTasks()
-    background_tasks.add_task(load_models_background, background_tasks)
-    background_tasks.add_task(load_models_info)
+
+    # Read the best models
+    with open("best_models.txt", "r") as f:
+        best_models = f.read().splitlines()
+    uniprots = [model_name[:6] for model_name in best_models]
+
+    for model_name in best_models:
+        background_tasks.add_task(load_model, model_name)
+
+    background_tasks.add_task(load_models_info, uniprots)
     # more tasks can be added
-
     await background_tasks()
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
     app.state.model_loading_pool.shutdown()
 
 
@@ -109,7 +100,7 @@ async def get_prediction_async(input, input_type, confidence_threshold=0.5):
         zip(models_info.keys(), models.values()), total=len(models)
     ):
         # np.float32 is not json serializable, take float64
-        pred = model.result().predict_proba(features).astype(np.float64)[:, 1].round(2)
+        pred = model.predict_proba(features).astype(np.float64)[:, 1].round(2)
         mask = pred >= confidence_threshold
         for _id, _pred in zip(cmpd_id[mask], pred[mask]):
             # Create a dictionary for compound if not exists
@@ -180,7 +171,7 @@ def run_task(payload=Body(...)):
 
 
 @app.get("/tasks/{task_id}")
-def get_status(task_id):
+def get_status(task_id: str):
     task_result = AsyncResult(task_id)
     result = {
         "task_id": task_id,
