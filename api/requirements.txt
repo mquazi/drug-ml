@@ -8,7 +8,7 @@ scikit-learn==0.22.0
 scipy==1.4.1
 six==1.13.0
 xgboost==0.90
-tqdm==2.2.3
+tqdm==4.66.1
 aiofiles==23.1.0
 celery==5.2.3
 flower==1.2.0

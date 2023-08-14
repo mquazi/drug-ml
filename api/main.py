@@ -3,18 +3,36 @@ from concurrent.futures import ProcessPoolExecutor
 from fastapi.responses import JSONResponse
 from fastapi.param_functions import Body
 from celery.result import AsyncResult
-from worker import create_task
+from celery_task_app.tasks import create_task, ligandnet_predict_celery
 import os
 import joblib
 import json
 from pathlib import Path as pathlib_Path
 from rdkit import Chem
 from ddt.utility import FeatureGenerator
-from tqdm import tqdm
+from tqdm.cli import tqdm
 import numpy as np
 import logging
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# Configure CORS
+origins = [
+    "http://localhost:5000",
+    "http://localhost:8000",
+    "http://api:8000",
+    "http://web:5000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(message)s")
@@ -24,6 +42,13 @@ logger = logging.getLogger(__name__)
 MODELS_DIR = pathlib_Path("models/files")
 models = {}
 models_info = {}
+best_models_dict = {}
+model_dict = {
+    "xgb": "XGBoost",
+    "rf": "Random Forest",
+    "svc": "Support Vector Machine",
+    "ann": "Artificial Neural Network",
+}
 
 
 def load_model(model_name: str):
@@ -40,9 +65,26 @@ def load_single_model(model_name: str):
 
 
 def load_models_info(uniprots: list):
+    def round_float_values(d):
+        rounded_dict = {}
+        for k, v in d.items():
+            if isinstance(v, float):
+                rounded_dict[k] = f"{v:.3f}"
+            elif isinstance(v, dict):
+                rounded_dict[k] = round_float_values(v)
+            else:
+                rounded_dict[k] = v
+        return rounded_dict
+
     for uniprot in uniprots:
         with open(f"models/reports/{uniprot}_results.json", "r") as f:
-            models_info[uniprot] = json.load(f)
+            info = json.load(f)
+        info = info[best_models_dict[uniprot]]
+        info["model_type"] = "classification"
+        info["model"] = model_dict[best_models_dict[uniprot]]
+        model_info = {**info, **info["data_info"]}
+        del model_info["data_info"]
+        models_info[uniprot] = round_float_values(model_info)
 
     logger.info("All models info loaded")
 
@@ -55,9 +97,12 @@ async def startup_event():
     # Read the best models
     with open("best_models.txt", "r") as f:
         best_models = f.read().splitlines()
-    uniprots = [model_name[:6] for model_name in best_models]
+    uniprots = []
 
     for model_name in best_models:
+        uniprot, model_type = model_name.split(".")
+        uniprots.append(uniprot)
+        best_models_dict[uniprot] = model_type
         background_tasks.add_task(load_model, model_name)
 
     background_tasks.add_task(load_models_info, uniprots)
@@ -143,6 +188,11 @@ async def ligandnet_home():
     return JSONResponse({"message": "Welcome to LigandNet API"})
 
 
+@app.get("/ligandnet/api/v1/models")
+async def ligandnet_models():
+    return JSONResponse(list(models_info.values()))
+
+
 @app.get("/ligandnet/api/v1/models/{uniprot_id}")
 async def ligandnet_model_info(uniprot_id: str = Depends(validate_uniprot_id)):
     return JSONResponse(models_info[uniprot_id])
@@ -164,14 +214,14 @@ async def ligandnet_predict_by_model(
 
 
 @app.post("/tasks", status_code=201)
-def run_task(payload=Body(...)):
+async def run_task(payload=Body(...)):
     task_type = payload["type"]
     task = create_task.delay(int(task_type))
     return JSONResponse({"task_id": task.id})
 
 
 @app.get("/tasks/{task_id}")
-def get_status(task_id: str):
+async def get_status(task_id: str):
     task_result = AsyncResult(task_id)
     result = {
         "task_id": task_id,
@@ -179,3 +229,9 @@ def get_status(task_id: str):
         "task_result": task_result.result,
     }
     return JSONResponse(result)
+
+
+@app.get("/ligandnet/api/v1/tasks/predict/{smiles}")
+async def run_prediction_task(smiles: str = Depends(validate_smiles)):
+    task = ligandnet_predict_celery.delay(smiles, "smiles")
+    return JSONResponse({"task_id": task.id})

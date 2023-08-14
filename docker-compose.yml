@@ -43,7 +43,7 @@ services:
       - ./api:/app
     env_file:
       - .env
-    command: celery -A worker.celery worker --loglevel=info --logfile=celery.log
+    command: celery -A celery_task_app.worker worker --loglevel=info --logfile=celery.log --concurrency=1
     depends_on:
       - web
       - api
