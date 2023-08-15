@@ -137,6 +137,10 @@ button.btn-default {
   padding: 8px 30px;
   margin-top: 40px;
 }
+#text_predict_btn {
+  padding: 8px 30px;
+  margin-top: 40px;
+}
 
 /**********************************************************************************/
 
