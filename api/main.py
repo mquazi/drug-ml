@@ -138,7 +138,7 @@ async def get_features(input, input_type):
 
 
 async def get_prediction_async(input, input_type, confidence_threshold=0.5):
-    results = {}
+    results = []
     cmpd_id, features = await get_features(input, input_type)
     cmpd_id = np.array(cmpd_id)
     for uniprot_id, model in tqdm(
@@ -148,11 +148,7 @@ async def get_prediction_async(input, input_type, confidence_threshold=0.5):
         pred = model.predict_proba(features).astype(np.float64)[:, 1].round(2)
         mask = pred >= confidence_threshold
         for _id, _pred in zip(cmpd_id[mask], pred[mask]):
-            # Create a dictionary for compound if not exists
-            if _id not in results.keys():
-                results[_id] = {}
-            # Update the compound result dictionary
-            results[_id].update({uniprot_id: _pred})
+            results.append({"uniprod_id": uniprot_id, "conf_score": _pred})
     return results
 
 
@@ -198,19 +194,19 @@ async def ligandnet_model_info(uniprot_id: str = Depends(validate_uniprot_id)):
     return JSONResponse(models_info[uniprot_id])
 
 
-@app.post("/ligandnet/api/v1/predict/{smiles}")
+@app.post("/ligandnet/api/v1/predict")
 async def ligandnet_predict(smiles: str = Depends(validate_smiles)):
     results = await get_prediction_async(smiles, "smiles")
-    return JSONResponse({"predictions": results})
+    return JSONResponse(results)
 
 
-@app.post("/ligandnet/api/v1/predict/{uniprot_id}/{smiles}")
+@app.post("/ligandnet/api/v1/predict/{uniprot_id}")
 async def ligandnet_predict_by_model(
     uniprot_id: str = Depends(validate_uniprot_id),
     smiles: str = Depends(validate_smiles),
 ):
     results = await get_prediction_by_model(uniprot_id, smiles, "smiles")
-    return JSONResponse({"predictions": results})
+    return JSONResponse(results)
 
 
 @app.post("/tasks", status_code=201)

@@ -11,11 +11,11 @@
       <a href="#text_tab" class="nav-link active" data-toggle="tab">
         <i class="fa fa-pencil" aria-hidden="true"></i> By Text</a>
     </li>
-    <li class="nav-item">
+    <!-- <li class="nav-item">
       <a href="#image_tab" class="nav-link" data-toggle="tab">
         <i class="fa fa-globe" aria-hidden="true"></i> Use Image
       </a>
-    </li>
+    </li> -->
   </ul>
 
   <div class="tab-content" id="tab_struct_prediction">
@@ -24,91 +24,16 @@
         <div class="col-md-6">
           <div class="form-group">
             <label for="text_input">Please input
-              <i><strong>NCGC ID</strong>, <strong>Compound Name</strong>,
-                <strong>SMILES</strong>,or <strong>SDF</strong></i>
+              <i><strong>SMILES</strong></i>
             </label>
             <textarea class="form-control rounded-0" id="text_input" rows="5"></textarea>
           </div>
         </div>
-        <div class="col-md-6">
-          <button class="btn btn-primary" id="text_convert_btn">
-            CONVERT
+        <div class="col-md-6 d-flex align-items-center">
+          <button class="btn btn-primary" id="text_predict_btn">
+            PREDICT
           </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-pane" id="image_tab">
-      <div class="row">
-        <div class="col-md-5" id="select_image_group_holder">
-          <input type="file" class="filestyle" id="struct_img_input"
-            data-iconName="glyphicon glyphicon-folder-open folder" data-buttonBefore="true"
-            data-placeholder="select a image file" />
-        </div>
-        <div class="col-md-7"></div>
-      </div>
-      <div class="row" id="algorithm_row">
-        <div class="col-md-5">
-          <div>Image recognition algorithm:</div>
-          <!--
-					<label class="radio-inline"><input type="radio" name="algorithm" class="algorithm" value="molvec" checked>MOLVEC</label>
-					<label class="radio-inline"><input type="radio" name="algorithm" class="algorithm" value="osra">OSRA</label>
-					-->
-          <!-- 
-					<div class="form-check form-check-inline">
-  						<input class="form-check-input algorithm" type="radio" name="algorithm" id="molvec" value="molvec" checked>
- 						 <label class="form-check-label" for="molvec">MOLVEC</label>
-					</div>
-					<div class="form-check form-check-inline">
-  						<input class="form-check-input algorithm" type="radio" name="algorithm" id="osra" value="osra">
-  						<label class="form-check-label" for="osra">OSRA</label>
-					</div>
-					 -->
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-5" id="image_container">
-          <label>Drag &amp; drop or paste a image</label>
-          <canvas id="image_canvas"></canvas>
-        </div>
-
-        <div class="col-md-2">
-          <img src="/static/img/processing2.gif" id="processing_img" />
-        </div>
-
-        <div class="col-md-4 help-block">
-          <div><strong>How to:</strong></div>
-          <div>Option 1. Select a structure image.<br /></div>
-          <div>
-            Option 2. Drag and drop a structure image into the dashed
-            box.<br />
-          </div>
-          <div>
-            Option 3. Paste a structure image into the dashed box from the
-            clipboard.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="structure_editor">
-      <div class="row">
-        <div class="col-md-12">
-          <div>
-            <iframe src="/static/editorws.html" id="sketch_frame"></iframe>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <br />
-        <div class="col-md-12">
-          <button class="btn btn-primary pull-right predict-btn" id="do_prediction_btn" disabled="disabled">
-            &nbsp;CLICK TO PREDICT &nbsp;
-          </button>
-          <button class="btn btn-danger pull-right" id="clear_btn" onclick="clearSketch()">
-            &nbsp; CLEAR &nbsp;
-          </button>
-          <img class="indicator pull-right" src="/static/image/process.gif" id="prediction_indictor" />
+          <img class="indicator ml-2" src="/static/image/process.gif" id="prediction_indictor">
         </div>
       </div>
     </div>
@@ -140,387 +65,47 @@
 
 <div id="prediction_content">
   <div class="container-fluid">
-    <div id="predx_table_filter">
-      <br />
-      <div class="row">
-        <div class="col-md-12 h5">Prediction Results and Filters</div>
-      </div>
-      <hr />
-      <div class="row" id="row_filters">
-        <div class="col-lg-2 col-md-2 col-sm-2">
-          <div class="filter-name"></div>
-          <button class="btn btn-default pull-left" id="predx_export" title="export prediction results">
-            Export
-            <i class="glyphicon glyphicon-save text-primary" aria-hidden="true"></i>
-          </button>
-        </div>
-
-        <div class="col-lg-2 col-md-2 col-sm-2">
-          <div class="filter-name"></div>
-          <button id="remove_all_filters" class="btn btn-default" title="click to restore the all prediction results">
-            <i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>
-            Remove All Filters
-          </button>
-        </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4">
-          <div class="filter-name">Regression Filter [3,10]</div>
-          <input id="regressionFilter" data-slider-id="regressionFilterSlider" type="text" data-slider-min="3"
-            data-slider-max="10" data-slider-step="0.05" data-slider-value="4" style="width: 100%" />
-        </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4">
-          <div class="filter-name">Similarity Filter [0,1]</div>
-          <input id="similarityFilter" data-slider-id="similarityFilterSlider" type="text" data-slider-min="0"
-            data-slider-max="1" data-slider-step="0.01" data-slider-value="0.2" style="width: 100%" />
-          <br />
-        </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4">
-          <div class="filter-name">Prediction Type</div>
-          <select class="form-control" id="predx_type">
-            <option value="all">All</option>
-            <!-- <option value="binary">Binary</option> -->
-            <option value="regression">Regression</option>
-            <option value="classification">Classification</option>
-          </select>
-        </div>
-        <div class="col-lg-4 col-md-4 col-sm-4">
-          <div class="filter-name">Applicability Domain</div>
-          <select class="form-control" id="predx_domain">
-            <option value="all">All</option>
-            <option value="high-confidence">High Confidence</option>
-            <option value="medium-confidence">Medium Confidence</option>
-            <option value="low-confidence">Low Confidence</option>
-          </select>
-        </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4">
-          <div class="filter-name">Group</div>
-          <select class="form-control" id="predx_group">
-            <option value="all">All</option>
-            <!-- <option value="target">Target</option> 
-    								<option value="toxicity">Toxicity</option> 
-    								<option value="other">Other</option>  -->
-          </select>
-        </div>
-      </div>
-
-      <script type="text/javascript">
-        //$(function(){
-
-        var filterValues = [];
-        var columnIdxs = [3, 4, 5, 6, 8];
-
-        var $predxType = $("#predx_type");
-        var $predxGroup = $("#predx_group");
-        var $ptredxDomain = $("#predx_domain");
-        var $regressionFilter = $("#regressionFilter");
-        var $similarityFilter = $("#similarityFilter");
-
-        $("#remove_all_filters").click(function () {
-          filterValues = [];
-          resetAllFilters();
-          $("table.dataTable tbody tr").show();
-        });
-
-        /* $regressionFilter.slider({
-  formatter : function(value) { return value; }
-}).on("slideStop", function(slideEvt) { 
-  filter(slideEvt.value,4)
-}); */
-
-        $regressionFilter
-          .slider({
-            formatter: function (value) {
-              return value;
-            },
-          })
-          .on(/* 'slide' */ "slideStop", function (slideEvt) {
-            //reset filters
-            $predxType.val("all");
-            $predxGroup.val("all");
-            $ptredxDomain.val("all");
-            $similarityFilter.slider("setValue", 0.2);
-
-            var v,
-              filterVal = slideEvt.value;
-            var $trs = $("#predx_table tbody tr");
-            var $tr, $td, match;
-
-            $trs.each(function (i, tr) {
-              match = false;
-              $tr = $(tr);
-              $td = $tr.find("td:nth-child(4)"); //<td> cell
-              if ($td.prev().text().trim() == "Regression") {
-                v = parseFloat($td.text());
-                match = v >= filterVal;
-              }
-
-              if (match) $tr.show();
-              else $tr.hide();
-            });
-          });
-
-        $similarityFilter
-          .slider({
-            formatter: function (value) {
-              return value;
-            },
-          })
-          .on(/* 'slide' */ "slideStop", function (slideEvt) {
-            filter(slideEvt.value, 8);
-          });
-
-        $predxType.change(function () {
-          var val = $(this).val();
-          filter(val, 3);
-        });
-
-        $ptredxDomain.change(function () {
-          filter($(this).val(), 6);
-        });
-
-        $predxGroup.change(function () {
-          filter($(this).val(), 7);
-        });
-
-        function resetAllFilters() {
-          $predxType.val("all");
-          $predxGroup.val("all");
-          $ptredxDomain.val("all");
-          $regressionFilter.slider("setValue", 4);
-          $similarityFilter.slider("setValue", 0.2);
-        }
-
-        function filter(val, colIdx) {
-          filterValues[colIdx] = val;
-          var $trs = $("#predx_table tbody tr");
-          var $tr, $td, cond;
-
-          $trs.each(function (i, tr) {
-            cond = false;
-            $tr = $(tr);
-
-            if (
-              getColumnCondition("string", $tr, 3, colIdx == 3 ? val : null)
-            )
-              if (
-                getColumnCondition(
-                  "string",
-                  $tr,
-                  6,
-                  colIdx == 6 ? val : null
-                )
-              )
-                if (
-                  getColumnCondition(
-                    "string",
-                    $tr,
-                    7,
-                    colIdx == 7 ? val : null
-                  )
-                )
-                  if (
-                    getColumnCondition(
-                      "number",
-                      $tr,
-                      8,
-                      colIdx == 8 ? val : null
-                    )
-                  )
-                    //if(getColumnCondition('number',$tr,4,(colIdx==4)?val:null))
-                    cond = true;
-
-            if (cond) {
-              $tr.show();
-            } else {
-              $tr.hide();
-            }
-          });
-        }
-
-        function getColumnCondition(type, $tr, colIdx, filterVal) {
-          if (filterVal == null)
-            //Not filter on this column (colIdx)
-            filterVal = filterValues[colIdx]; //
-
-          if (!filterVal)
-            //This column not filtered yet.
-            return true;
-
-          var $td = $tr.find("td:nth-child(" + colIdx + ")"); //<td> cell
-          var txt = $td.text().replace(/\s/g, "").toLowerCase(); //get<td> cell value
-
-          var condiction = false;
-          if (type == "string") {
-            if (colIdx == 6)
-              //applicability domain
-              return $td.find(":first-child").hasClass(filterVal);
-            else condiction = filterVal == txt || filterVal == "all";
-          } else {
-            if (isNaN(txt)) return true; //For 'Prediction Result' 'binary' type
-
-            var v = parseFloat(txt);
-            condiction = v >= filterVal;
-          }
-          return condiction;
-        }
-
-        $.ajax({
-          type: "get",
-          url: "route/predict/model/groups",
-          success: function (result) {
-            //console.log(result)
-            $.each(result, function (i, group) {
-              $predxGroup.append(
-                '<option value="' +
-                group.replace(/\s/g, "").toLowerCase() +
-                '">' +
-                group +
-                "</option>"
-              );
-            });
-          },
-          error: function (xhr, status, error) {
-            alert("route/predict/model/groups");
-          },
-        });
-            //})
-      </script>
+    <br />
+    <div class="row">
+      <div class="col-md-12 h5">Prediction Results</div>
     </div>
+    <hr />
   </div>
   <div class="container-fluid">
-    <div id="predx_table_container">
-      <table class="table table-hover table-striped table-responsive" id="predx_table">
+    <div id="prediction_result">
+      <table class="table table-responsive" id="predx_table">
         <thead>
           <tr>
             <th></th>
             <th>Model Name</th>
-            <th>Prediction Type</th>
-            <th>Prediction Result</th>
-            <th>End Point</th>
-            <th>Applicability Domain</th>
-            <th>Group</th>
             <th>Confidence Score</th>
-            <th>Neighbor Activity</th>
-            <th>Neighbor Structure</th>
           </tr>
         </thead>
       </table>
     </div>
   </div>
 </div>
-
-<div>
-  <div id="smi_sdf_copy">
-    <div class="div-header">
-      <div class="close-x float-right" onclick="hideCopyDiv()">
-        <span class="badge">X</span>
-      </div>
-    </div>
-    <div class="div-content">
-      <p></p>
-    </div>
-    <div class="div-footer">
-      <div class="copied-hint float-left">
-        <strong>copied to clipboard...</strong>
-      </div>
-      <button onclick="showCopy()">
-        <i class="fa fa-clipboard" aria-hidden="true"></i> copy
-      </button>
-      <button onclick="saveAsFile()" id="save_as_file_btn">
-        <i class="fa fa-floppy-o" aria-hidden="true"></i> Save as file
-      </button>
-    </div>
-  </div>
-
-  <script>
-    //---------------------Copy smile & sdf--------------------------------------------------------------------
-    var $copyDiv = $("#smi_sdf_copy"),
-      $saveFileBtn = $("#save_as_file_btn");
-    $copyDiv.center();
-    var $copyContent = $copyDiv.find(".div-content p"),
-      copyHintclass = "select-and-copy";
-    $copyContent.click(function () {
-      $copyContent.removeClass(copyHintclass);
-    }); //mimic
-
-    function showCopy() {
-      $copyContent.addClass(copyHintclass);
-      $copyDiv.find(".div-footer .copied-hint").show().fadeOut(5000);
-
-      var str = $copyContent.text();
-      function listener(e) {
-        e.clipboardData.setData("text/html", str);
-        e.clipboardData.setData("text/plain", str);
-        e.preventDefault();
-      }
-      document.addEventListener("copy", listener);
-      document.execCommand("copy");
-      document.removeEventListener("copy", listener);
-    }
-
-    function showCopyDiv(text, type) {
-      $copyDiv.show();
-      if (type == "sdf") $saveFileBtn.show();
-      else $saveFileBtn.hide();
-      $copyContent.removeClass(copyHintclass).html(text);
-    }
-    function hideCopyDiv() {
-      $copyDiv.hide();
-      $copyContent.removeClass(copyHintclass).html("");
-    }
-
-    function saveAsFile() {
-      var content = $copyContent.text();
-      var file = new File(
-        [content],
-        "structure-" + new Date().getTime() + ".sdf",
-        { type: "text/plain;charset=utf-8" }
-      );
-      saveAs(file);
-    }
-  </script>
 </div>
 
 <script type="text/template" id="model_detail_template">
-  {{"{{#."|safe }}
+  {{"{{#.}}"|safe }}
     <dl class="row">
-    <dt class="col-md-2">Name:</dt><dd class="col-md-9"><i>{{name}}</i></dd>
-    <dt class="col-md-2">Prediction Type:</dt><dd class="col-md-9">{{type}}</dd>
-    <dt class="col-md-2">End Point:</dt><dd class="col-md-9">{{endPoint}}</dd>
-    
-    <dt class="col-md-2">Group:</dt><dd class="col-md-9">{{group}}</dd>
-    <dt class="col-md-2">Title:</dt><dd class="col-md-9">{{title}}</dd>
-    <dt class="col-md-2">Num Training Set:</dt><dd class="col-md-9">{{numTraining}}</dd>
-    
-    <dt class="col-md-2">Num Testing Set:</dt><dd class="col-md-9">{{numTesting}}</dd>
-    <dt class="col-md-2">Validation Approach:</dt><dd class="col-md-9">{{validationApproach}}</dd>
-    <dt class="col-md-2">R2:</dt><dd class="col-md-9">{{r2}}</dd>
-    
-    <dt class="col-md-2">RMSE:</dt><dd class="col-md-9">{{rmse}}</dd>
-    <dt class="col-md-2">Balanced Accuracy:</dt><dd class="col-md-9">{{accuracy}}</dd>
-     
-    <dt class="col-md-2">AUC:</dt><dd class="col-md-9">{{auc}}</dd>
-    <dt class="col-md-3 gap">Descriptors:</dt>
-  <dd class="col-md-12">{{descriptors}}</dd>
-    
-    <dt class="col-md-3">Machine Learning Approach:</dt>
-  <dd class="col-md-12">{{macLearningApproach}}</dd>
-    <dt class="col-md-3 gap">Applicability domain:</dt>
-  <dd class="col-md-12">{{applicabilityDomain}}</dd>
-    
-  <dt class="col-md-3 gap">Reference:</dt>
-  <dd class="col-md-12">
-    {{ "{{#references}}"|safe }}
-    {{ "{{.}}<br/>"|safe }}
-    {{ "{{/references}}"|safe }}
-  </dd>
-  <dt class="col-md-2">Source:</dt><dd class="col-md-9"><a href="{{link}}.zip">{{source}}</a></dd>
+    <dt class="col-md-2">Name:</dt><dd class="col-md-9"><i>{{"{{protein_name}}"|safe }}</i></dd>
+    <dt class="col-md-2">UNIPROT ID:</dt><dd class="col-md-9">{{"{{uniprot_id}}"|safe }}</dd>
+    <dt class="col-md-2">Prediction Type:</dt><dd class="col-md-9">{{"{{model_type}}"|safe }}</dd>
+    <dt class="col-md-2">Num Training Set:</dt><dd class="col-md-9">{{"{{train_count}}"|safe }}</dd>    
+    <dt class="col-md-2">Num Testing Set:</dt><dd class="col-md-9">{{"{{test_count}}"|safe }}</dd>
+    <dt class="col-md-2">Num Actives:</dt><dd class="col-md-9">{{"{{actives_count}}"|safe }}</dd>
+    <dt class="col-md-2">Num Decoys:</dt><dd class="col-md-9">{{"{{decoys_count}}"|safe }}</dd>
+    <dt class="col-md-2">ROC AUC:</dt><dd class="col-md-9">{{"{{roc_auc}}"|safe }}</dd>
+    <dt class="col-md-2">Accuracy:</dt><dd class="col-md-9">{{"{{accuracy}}"|safe }}</dd>
+    <dt class="col-md-2">F1 Score:</dt><dd class="col-md-9">{{"{{f1_score}}"|safe }}</dd>
+    <dt class="col-md-2">MCC:</dt><dd class="col-md-9">{{"{{mcc}}"|safe }}</dd>
+    <dt class="col-md-2">Cohen Kappa:</dt><dd class="col-md-9">{{"{{cohen_kappa}}"|safe }}</dd>
   </dl>
   {{ "{{/.}}"|safe }}
 </script>
+
 </div>
 
 {% endblock %}
@@ -528,356 +113,43 @@
 {% block scripts %}
 <script type="text/javascript">
   $(function () {
-    setActiveMenu("navbar_structure");
+    setActiveMenu('navbar_structure');
 
-    var IMAGE_DATA;
-    var DATA = {},
-      $imgContainer = $("#image_container");
-    $(":file").filestyle();
-    $imgContainer.click(function () {
-      $imgContainer.addClass("hilit-border");
-    });
-    $(document).click(function (event) {
-      var $target = $(event.target);
-      if (!$target.closest($imgContainer).length)
-        $imgContainer.removeClass("hilit-border");
-    });
-    //-------------------use cache------------------------------------
-    if (window.PREDICTION_DATA) {
-      buildPredxResultTable(window.PREDICTION_DATA);
-      $("#do_prediction_btn").prop("disabled", false);
-    }
-
-    //----------------------------Prediction---------------------------------------------
-    function doPrediction(mol) {
-      //cache
-      window.MOL = mol;
+    var $predict_btn = $("#text_predict_btn");
+    $predict_btn.click(function doPrediction() {
       var $indictator = $("#prediction_indictor");
       $indictator.show();
       $.ajax({
-        url: "route/predict",
-        data: mol,
-        type: "POST",
-        dataType: "json",
-        contentType: "text/plain;charset=UTF-8",
+        url: "http://localhost:8000/ligandnet/api/v1/predict?smiles=" + $("#text_input").val(),
+        type: 'POST',
+        dataType: 'json',
+        contentType: 'text/plain;charset=UTF-8',
         success: function (data, status, xhr) {
-          //cache
-          window.PREDICTION_DATA = data;
-          buildPredxResultTable(data);
+          var $predx_table = $("#predx_table");
+          var rows = "";
+          data.forEach(function (d) {
+            rows += "<tr>";
+            rows += "<td>" + d.uniprod_id + "</td>";
+            rows += "<td>"+ d.conf_score +"</td>";
+            rows += "</tr>";            
+          });
+          // add rows to predx_table
+          $predx_table.append(rows);
+          // hide the indicator
           $indictator.hide();
+          // show the prediction result
+          $("#prediction_content").show();
         },
         error: function (xhr, status, error) {
-          $indictator.hide();
-          bootbox.alert("Prediction failed.");
-        },
-      });
-    }
-
-    function buildPredxResultTable(data) {
-      var $predxContainer = $("#prediction_content");
-      $predxContainer.show();
-      PredxTable.build("predx_table", data);
-      $("html, body").animate(
-        { scrollTop: $predxContainer.offset().top - 100 },
-        "fast"
-      );
-
-      //reset filters
-      if (resetAllFilters) resetAllFilters();
-    }
-
-    //----------------------Sketcher------------------------------------------------------------------------
-    var marvinSketcherInstance;
-    var $doPredictionBtn = $("#do_prediction_btn");
-    $doPredictionBtn.on("click", function (e) {
-      if (marvinSketcherInstance.isEmpty()) {
-        bootbox.alert("No structure draw/found!");
-        return;
-      }
-
-      marvinSketcherInstance.exportStructure("mol").then(
-        function (source) {
-          doPrediction(source);
-        },
-        function (error) {
-          bootbox.alert("Molecule export failed." + error);
-        }
-      );
-    });
-
-    MarvinJSUtil.getEditor("#sketch_frame").then(
-      function (sketcherInstance) {
-        marvinSketcherInstance = sketcherInstance;
-
-        marvinSketcherInstance.addButton(
-          {
-            name: "SDF",
-            "image-url": "examples/images/sdf.jpg",
-            toolbar: "S",
-          },
-          function () {
-            if (marvinSketcherInstance.isEmpty()) {
-              bootbox.alert("No SDF available!");
-              return;
-            }
-            marvinSketcherInstance.exportStructure("mol").then(
-              function (source) {
-                //just in case the structure get edited, use edited sdf instead
-                DATA.sdfFromSketcher = source;
-                showCopyDiv("<pre>" + source + "</pre>", "sdf");
-              },
-              function (error) {
-                bootbox.alert("Can not copy SDF");
-              }
-            );
-          }
-        );
-        marvinSketcherInstance.addButton(
-          {
-            name: "SMILES",
-            "image-url": "examples/images/smi.jpg",
-            toolbar: "S",
-          },
-          function (e) {
-            //how about edited structure?
-            if (!DATA.smiles) {
-              bootbox.alert("No SMILES available!");
-              return;
-            }
-            showCopyDiv(DATA.smiles, "smi");
-          }
-        );
-
-        marvinSketcherInstance.on("molchange", function () {
-          if (marvinSketcherInstance.isEmpty())
-            $structureSearchBtn.prop("disabled", true);
-          else $doPredictionBtn.prop("disabled", false);
-        });
-      },
-      function (error) {
-        bootbox.alert("Cannot retrieve sketcher instance from iframe.");
-      }
-    );
-    window.clearSketch = function () {
-      marvinSketcherInstance.clear();
-      $doPredictionBtn.prop("disabled", true);
-    };
-    function importMolToSketcher(data) {
-      //init
-      DATA = { smiles: data.smiles, sdf: data.sdf, sdfFromSketcher: null };
-      //console.log(data.sdf);
-      marvinSketcherInstance
-        .importStructure("mol", data.sdf)
-        .catch(function (error) {
-          //If the sketcher cannot render the data.sdf, use data.smiles regenerate the sdf. Example: NCGC00016580-01
-          if (data.smiles) convertText(data.smiles);
-          else bootbox.alert("Cannot show the structure.");
-        });
-    }
-
-    //----------------------Image transform------------------------------------------------------------------------
-    var $processing = $("#processing_img");
-    $imgContainer.filedrop({
-      callback: function (fileEncryptedData) {
-        var size = fileEncryptedData.length / (1024 * 1024);
-        if (size > 2.5) {
-          bootbox.alert("The input image exceeds the 2MB limit size.");
-          return;
-        }
-        imgToMolToMarvinJs(fileEncryptedData);
-      },
-    });
-
-    $("#struct_img_input").change(function (event) {
-      var $this = $(this);
-      var files =
-        event.originalEvent.target.files ||
-        event.originalEvent.dataTransfer.files;
-      try {
-        var reader = new FileReader();
-        reader.onload = function (event) {
-          var fileEncryptedData = event.target.result;
-          imgToMolToMarvinJs(fileEncryptedData);
-        };
-        reader.readAsDataURL(files[0]);
-      } catch (e) {
-        bootbox.alert(
-          "Error: seems File API is not supported on your browser"
-        );
-      }
-    });
-
-    //select algorithm
-    $('input[name="algorithm"]').change(function () {
-      if (!IMAGE_DATA) return;
-      imgToMolToMarvinJs(IMAGE_DATA);
-    });
-
-    function imgToMolToMarvinJs(fileEncryptedData) {
-      IMAGE_DATA = fileEncryptedData;
-      $processing.show();
-      $imgContainer.css(
-        "background-image",
-        "url(" + fileEncryptedData + ")"
-      );
-
-      //var alg=$('input[name="algorithm"]:checked').val();
-      var formData = new FormData();
-      //formData.append('algorithm',alg);
-      formData.append("algorithm", "osra");
-      formData.append("imgBase64", fileEncryptedData);
-
-      $.ajax({
-        type: "POST",
-        data: formData,
-        processData: false,
-        contentType: false,
-        url: "transform/image",
-        success: function (data, status, xhr) {
-          //console.log(data);
-          $processing.hide();
-          if (!data.sdf) {
-            bootbox.alert("Cannot transform the image to structure");
-            return;
-          }
-          importMolToSketcher(data);
-        },
-        error: function (xhr, status, error) {
-          $processing.hide();
-          bootbox.alert("Cannot transform the image to structure");
-        },
-      });
-    }
-    //---------------------------------Paste image---------------------------------------------------------------
-    var CLIPBOARD = new CLIPBOARD_CLASS("image_canvas", false);
-
-    function CLIPBOARD_CLASS(actualImageCanvasId, autoresize) {
-      var _self = this;
-      var canvas = document.getElementById(actualImageCanvasId);
-      var ctx = document
-        .getElementById(actualImageCanvasId)
-        .getContext("2d");
-
-      //handlers
-      document.addEventListener(
-        "paste",
-        function (e) {
-          _self.paste_auto(e);
-        },
-        false
-      );
-
-      //on paste
-      this.paste_auto = function (e) {
-        if (!$("#image_tab.active").length) {
-          return; //for paste text
-        }
-        if (e.clipboardData) {
-          var items = e.clipboardData.items;
-          if (!items) return;
-          //access data directly
-          for (var i = 0; i < items.length; i++) {
-            if (items[i].type.indexOf("image") !== -1) {
-              //image
-              var blob = items[i].getAsFile();
-              var URLObj = window.URL || window.webkitURL;
-              var source = URLObj.createObjectURL(blob);
-              this.paste_createImage(source);
-            }
-          }
-          e.preventDefault();
-        }
-      };
-      //draw pasted image to canvas
-      this.paste_createImage = function (source) {
-        var pastedImage = new Image();
-        pastedImage.src = source;
-
-        pastedImage.onload = function () {
-          //draw image for recognition. 'image_canvas'
-          canvas.width = pastedImage.width;
-          canvas.height = pastedImage.height;
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.fillStyle = "#FFFFFF";
-          ctx.fillRect(0, 0, pastedImage.width, pastedImage.height);
-          ctx.drawImage(pastedImage, 0, 0);
-          var dataURL = canvas.toDataURL();
-          imgToMolToMarvinJs(dataURL);
-        };
-
-        $imgContainer.removeClass("hilit-border");
-      };
-    }
-    //----------------------Text transform------------------------------------------------------------------------
-    var $textInput = $("#text_input"),
-      $convertBtn = $("#text_convert_btn");
-    $textInput.on("keypress", function (e) {
-      if (e.keyCode == 13) $convertBtn.trigger("click");
-    });
-    $convertBtn.click(function () {
-      var text = $textInput.val();
-      if (text.trim().length <= 0) {
-        bootbox.alert(
-          "Please input NCGC ID, Chemical Name, SMILES or SDF!"
-        );
-        return;
-      }
-      convertText(text);
-    });
-
-    function showTransforming(show) {
-      var $txt = $convertBtn.find("span");
-      if (show) $txt.addClass("text-blink").html("CONVERTING......");
-      else
-        $txt
-          .removeClass("text-blink")
-          .html('<i class="fa fa-cogs"></i> Convert ');
-    }
-    function convertText(text) {
-      showTransforming(true);
-      $.ajax({
-        url: "transform/text",
-        data: text,
-        type: "POST",
-        dataType: "json",
-        contentType: "text/plain;charset=UTF-8",
-        success: function (data, status, xhr) {
-          //console.log(data);
-          showTransforming(false);
-          if (!data.sdf) {
-            bootbox.alert("No structure available", function () { });
-            return;
-          }
-          importMolToSketcher(data);
-        },
-        error: function (xhr, status, error) {
-          showTransforming(false);
-          bootbox.alert("Cannot get the structure");
-        },
-      });
-    }
-
-    $("#modelDetailModal").on("shown.bs.modal", function (e) {
-      var $invoker = $(e.relatedTarget);
-      var modelId = $invoker.attr("data-modelId");
-      $.ajax({
-        url: "route/predict/model/byid/" + modelId,
-        type: "GET",
-        dataType: "json",
-        success: function (data, status, xhr) {
-          var refArr = data.references.split(/\|/);
-          data.references = refArr;
-          var infoHtml = Mustache.to_html(
-            $("#model_detail_template").html(),
-            data
-          ); //cssjs.html
-          $("#modelDetailModal").find(".modal-body").html(infoHtml);
-        },
-        error: function (xhr, status, error) {
-          errorHandler(xhr, status, error);
+          handleAjaxError(xhr, status, error);
         },
       });
     });
+    function handleAjaxError(xhr, status, error) {
+      // Display error message to the user
+      var errorMessage = "An error occurred: " + error;
+      console.error(errorMessage);
+    }
   });
 </script>
 
