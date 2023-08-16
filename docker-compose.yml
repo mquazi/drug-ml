@@ -3,7 +3,7 @@ version: '3.8'
 services:
   web:
     build: ./web
-    container_name: web
+    image: web
     volumes:
       - ./web:/app
     ports:
@@ -15,19 +15,22 @@ services:
       - api
       - db
       - redis
+    restart: unless-stopped
 
   api:
     build: ./api
-    container_name: api
+    image: api
     volumes:
       - ./api:/app
     env_file:
       - .env
     ports:
       - "8000:8000"
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: sh -c ./run_api.sh
     depends_on:
       - db
+      - redis
+    restart: unless-stopped
 
   db:
     image: postgres:12.1-alpine
@@ -35,23 +38,24 @@ services:
       - .env
     ports:
       - "5432:5432"
+    restart: unless-stopped
 
   worker:
-    build: ./api
-    container_name: worker
+    image: api
     volumes:
       - ./api:/app
     env_file:
       - .env
-    command: celery -A celery_task_app.worker worker --loglevel=info --logfile=celery.log --concurrency=1
+    command: sh -c ./run_worker.sh
     depends_on:
       - web
       - api
       - redis
       - db
+    restart: unless-stopped
 
   dashboard:
-    build: ./api
+    image: api
     command: celery --broker=redis://redis:6379/0 flower --port=5555
     ports:
       - 5556:5555
@@ -63,6 +67,10 @@ services:
       - db
       - redis
       - worker
+    restart: unless-stopped
 
   redis:
     image: redis:7
+    ports:
+      - "6380:6379"
+    restart: unless-stopped

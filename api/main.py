@@ -10,7 +10,7 @@ import json
 from pathlib import Path as pathlib_Path
 from rdkit import Chem
 from ddt.utility import FeatureGenerator
-from tqdm.cli import tqdm
+from tqdm import tqdm
 import numpy as np
 import logging
 from fastapi import FastAPI

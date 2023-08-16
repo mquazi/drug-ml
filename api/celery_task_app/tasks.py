@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s:     %(message)s")
 logger = logging.getLogger(__name__)
 
 
-MODELS_DIR = Path("models/files")
+MODELS_DIR = Path(os.environ["MODELS_DIR"])
 models = {}
 models_info = {}
 
