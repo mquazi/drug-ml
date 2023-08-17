@@ -389,7 +389,7 @@ button.btn-default {
 #prediction_content {
   display: none;
   margin-top: 30px;
-  padding: 30px;
+  padding: 10px;
 }
 #predx_table_filter {
   padding-bottom: 30px;

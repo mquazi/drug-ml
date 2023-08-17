@@ -1,4 +1,4 @@
-from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException, Path
+from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
 from concurrent.futures import ProcessPoolExecutor
 from fastapi.responses import JSONResponse
 from fastapi.param_functions import Body
@@ -13,6 +13,7 @@ from ddt.utility import FeatureGenerator
 from tqdm import tqdm
 import numpy as np
 import logging
+from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -111,7 +112,7 @@ async def startup_event():
     app.state.model_loading_pool.shutdown()
 
 
-def validate_uniprot_id(uniprot_id: str = Path(..., title="Uniprot ID")):
+def validate_uniprot_id(uniprot_id: str):
     if uniprot_id not in models_info.keys():
         raise HTTPException(status_code=404, detail="Uniprot ID not found")
     return uniprot_id
@@ -148,30 +149,22 @@ async def get_prediction_async(input, input_type, confidence_threshold=0.5):
         pred = model.predict_proba(features).astype(np.float64)[:, 1].round(2)
         mask = pred >= confidence_threshold
         for _id, _pred in zip(cmpd_id[mask], pred[mask]):
-            results.append({"uniprod_id": uniprot_id, "conf_score": _pred})
+            results.append({"uniprot_id": uniprot_id, "conf_score": _pred})
     return results
 
 
-async def get_prediction_by_model(
+async def get_prediction_by_model_async(
     uniprot_id, input, input_type, confidence_threshold=0.5
 ):
-    results = {}
     cmpd_id, features = await get_features(input, input_type)
     cmpd_id = np.array(cmpd_id)
     # find the matching key in models
     matched_key = [key for key in models.keys() if uniprot_id in key]
     if len(matched_key) == 0:
         raise HTTPException(status_code=404, detail="Requested model not found")
-    model = models[matched_key[0]].result()
+    model = models[matched_key[0]]
     pred = model.predict_proba(features).astype(np.float64)[:, 1].round(2)
-    mask = pred >= confidence_threshold
-    for _id, _pred in zip(cmpd_id[mask], pred[mask]):
-        # Create a dictionary for compound if not exists
-        if _id not in results.keys():
-            results[_id] = {}
-        # Update the compound result dictionary
-        results[_id].update({uniprot_id: _pred})
-    return results
+    return {"uniprot_id": uniprot_id, "conf_score": pred[0]}
 
 
 @app.get("/")
@@ -185,27 +178,25 @@ async def ligandnet_home():
 
 
 @app.get("/ligandnet/api/v1/models")
-async def ligandnet_models():
+async def ligandnet_models(uniprot_id: Optional[str] = None):
+    if uniprot_id:
+        if uniprot_id not in models_info.keys():
+            raise HTTPException(status_code=404, detail="Uniprot ID not found")
+        return JSONResponse(models_info[uniprot_id])
     return JSONResponse(list(models_info.values()))
 
 
-@app.get("/ligandnet/api/v1/models/{uniprot_id}")
-async def ligandnet_model_info(uniprot_id: str = Depends(validate_uniprot_id)):
-    return JSONResponse(models_info[uniprot_id])
-
-
 @app.post("/ligandnet/api/v1/predict")
-async def ligandnet_predict(smiles: str = Depends(validate_smiles)):
-    results = await get_prediction_async(smiles, "smiles")
-    return JSONResponse(results)
-
-
-@app.post("/ligandnet/api/v1/predict/{uniprot_id}")
-async def ligandnet_predict_by_model(
-    uniprot_id: str = Depends(validate_uniprot_id),
+async def ligandnet_predict(
     smiles: str = Depends(validate_smiles),
+    uniprot_id: Optional[str] = None,
 ):
-    results = await get_prediction_by_model(uniprot_id, smiles, "smiles")
+    if uniprot_id:
+        if uniprot_id not in models_info.keys():
+            raise HTTPException(status_code=404, detail="Uniprot ID not found")
+        results = await get_prediction_by_model_async(uniprot_id, smiles, "smiles")
+    else:
+        results = await get_prediction_async(smiles, "smiles")
     return JSONResponse(results)
 
 

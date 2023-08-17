@@ -29,7 +29,7 @@
             <textarea class="form-control rounded-0" id="text_input" rows="5"></textarea>
           </div>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
+        <div class="col-md-6">
           <button class="btn btn-primary" id="text_predict_btn">
             PREDICT
           </button>
@@ -38,6 +38,29 @@
       </div>
     </div>
   </div>
+
+  <div id="prediction_content">
+    <div>
+      <br />
+      <div class="row">
+        <div class="col-md-9 h5">Prediction Results</div>
+      </div>
+      <hr />
+    </div>
+    <div>
+      <div id="prediction_result">
+        <table class="table table-responsive" id="predx_table">
+          <thead>
+            <tr>
+              <th>Model Name</th>
+              <th>Confidence Score</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 </div>
 
 <div id="popup_structure_holder">
@@ -63,45 +86,23 @@
   </div>
 </div>
 
-<div id="prediction_content">
-  <div class="container-fluid">
-    <br />
-    <div class="row">
-      <div class="col-md-12 h5">Prediction Results</div>
-    </div>
-    <hr />
-  </div>
-  <div class="container-fluid">
-    <div id="prediction_result">
-      <table class="table table-responsive" id="predx_table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>Model Name</th>
-            <th>Confidence Score</th>
-          </tr>
-        </thead>
-      </table>
-    </div>
-  </div>
-</div>
-</div>
+
 
 <script type="text/template" id="model_detail_template">
   {{"{{#.}}"|safe }}
     <dl class="row">
-    <dt class="col-md-2">Name:</dt><dd class="col-md-9"><i>{{"{{protein_name}}"|safe }}</i></dd>
-    <dt class="col-md-2">UNIPROT ID:</dt><dd class="col-md-9">{{"{{uniprot_id}}"|safe }}</dd>
-    <dt class="col-md-2">Prediction Type:</dt><dd class="col-md-9">{{"{{model_type}}"|safe }}</dd>
-    <dt class="col-md-2">Num Training Set:</dt><dd class="col-md-9">{{"{{train_count}}"|safe }}</dd>    
-    <dt class="col-md-2">Num Testing Set:</dt><dd class="col-md-9">{{"{{test_count}}"|safe }}</dd>
-    <dt class="col-md-2">Num Actives:</dt><dd class="col-md-9">{{"{{actives_count}}"|safe }}</dd>
-    <dt class="col-md-2">Num Decoys:</dt><dd class="col-md-9">{{"{{decoys_count}}"|safe }}</dd>
-    <dt class="col-md-2">ROC AUC:</dt><dd class="col-md-9">{{"{{roc_auc}}"|safe }}</dd>
-    <dt class="col-md-2">Accuracy:</dt><dd class="col-md-9">{{"{{accuracy}}"|safe }}</dd>
-    <dt class="col-md-2">F1 Score:</dt><dd class="col-md-9">{{"{{f1_score}}"|safe }}</dd>
-    <dt class="col-md-2">MCC:</dt><dd class="col-md-9">{{"{{mcc}}"|safe }}</dd>
-    <dt class="col-md-2">Cohen Kappa:</dt><dd class="col-md-9">{{"{{cohen_kappa}}"|safe }}</dd>
+    <dt class="col-md-3">Name:</dt><dd class="col-md-9"><i>{{"{{protein_name}}"|safe }}</i></dd>
+    <dt class="col-md-3">UNIPROT ID:</dt><dd class="col-md-9">{{"{{uniprot_id}}"|safe }}</dd>
+    <dt class="col-md-3">Prediction Type:</dt><dd class="col-md-9">{{"{{model_type}}"|safe }}</dd>
+    <dt class="col-md-3">Num Training Set:</dt><dd class="col-md-9">{{"{{train_count}}"|safe }}</dd>    
+    <dt class="col-md-3">Num Testing Set:</dt><dd class="col-md-9">{{"{{test_count}}"|safe }}</dd>
+    <dt class="col-md-3">Num Actives:</dt><dd class="col-md-9">{{"{{actives_count}}"|safe }}</dd>
+    <dt class="col-md-3">Num Decoys:</dt><dd class="col-md-9">{{"{{decoys_count}}"|safe }}</dd>
+    <dt class="col-md-3">ROC AUC:</dt><dd class="col-md-9">{{"{{roc_auc}}"|safe }}</dd>
+    <dt class="col-md-3">Accuracy:</dt><dd class="col-md-9">{{"{{accuracy}}"|safe }}</dd>
+    <dt class="col-md-3">F1 Score:</dt><dd class="col-md-9">{{"{{f1_score}}"|safe }}</dd>
+    <dt class="col-md-3">MCC:</dt><dd class="col-md-9">{{"{{mcc}}"|safe }}</dd>
+    <dt class="col-md-3">Cohen Kappa:</dt><dd class="col-md-9">{{"{{cohen_kappa}}"|safe }}</dd>
   </dl>
   {{ "{{/.}}"|safe }}
 </script>
@@ -129,9 +130,9 @@
           var rows = "";
           data.forEach(function (d) {
             rows += "<tr>";
-            rows += "<td>" + d.uniprod_id + "</td>";
-            rows += "<td>"+ d.conf_score +"</td>";
-            rows += "</tr>";            
+            rows += "<td><a href='#' class='model_detail' data-uniprot_id='" + d.uniprot_id + "'>" + d.uniprot_id + "</a></td>";
+            rows += "<td>" + d.conf_score + "</td>";
+            rows += "</tr>";
           });
           // add rows to predx_table
           $predx_table.append(rows);
@@ -139,6 +140,25 @@
           $indictator.hide();
           // show the prediction result
           $("#prediction_content").show();
+        },
+        error: function (xhr, status, error) {
+          handleAjaxError(xhr, status, error);
+        },
+      });
+    });
+    // handle model detail click
+    $(document).on("click", ".model_detail", function () {
+      var uniprot_id = $(this).data("uniprot_id");
+      $.ajax({
+        url: "http://localhost:8000/ligandnet/api/v1/models/?uniprot_id=" + uniprot_id,
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json;charset=UTF-8',
+        success: function (data, status, xhr) {
+          var template = $("#model_detail_template").html();
+          var html = Mustache.to_html(template, data);
+          $("#modelDetailModal .modal-body").html(html);
+          $("#modelDetailModal").modal("show");
         },
         error: function (xhr, status, error) {
           handleAjaxError(xhr, status, error);

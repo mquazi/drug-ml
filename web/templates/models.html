@@ -62,8 +62,9 @@
     function buildModelsList() {
       $.ajax({
         url: "http://localhost:8000/ligandnet/api/v1/models",
-        type: "GET",
-        dataType: "json",
+        type: 'GET',
+        dataType: 'json',
+        contentType: 'application/json;charset=UTF-8',
         success: function (data, status, xhr) {
           $("#total_model").html(data.length);
           var options = "";
@@ -98,7 +99,7 @@
 
     function showModelDetail(modelId) {
       $.ajax({
-        url: "http://localhost:8000/ligandnet/api/v1/models/" + modelId,
+        url: "http://localhost:8000/ligandnet/api/v1/models/?uniprot_id=" + modelId,
         type: "GET",
         dataType: "json",
         success: function (data, status, xhr) {
